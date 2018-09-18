@@ -71,7 +71,7 @@ namespace SHttp
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.ToString());
+                //Console.WriteLine("Exception: " + e.ToString());
                 writeFailure();
             }
             outputStream.Flush();
@@ -92,18 +92,18 @@ namespace SHttp
             http_url = tokens[1];
             http_protocol_versionstring = tokens[2];
 
-            Console.WriteLine("starting: " + request);
+            //Console.WriteLine("starting: " + request);
         }
 
         public void readHeaders()
         {
-            Console.WriteLine("readHeaders()");
+            //Console.WriteLine("readHeaders()");
             String line;
             while ((line = streamReadLine(inputStream)) != null)
             {
                 if (line.Equals(""))
                 {
-                    Console.WriteLine("got headers");
+                    //Console.WriteLine("got headers");
                     return;
                 }
 
@@ -120,7 +120,7 @@ namespace SHttp
                 }
 
                 string value = line.Substring(pos, line.Length - pos);
-                Console.WriteLine("header: {0}:{1}", name, value);
+                //Console.WriteLine("header: {0}:{1}", name, value);
                 httpHeaders[name] = value;
             }
         }
@@ -142,7 +142,7 @@ namespace SHttp
             // we hand him needs to let him see the "end of the stream" at this content 
             // length, because otherwise he won't know when he's seen it all! 
 
-            Console.WriteLine("get post data start");
+            //Console.WriteLine("get post data start");
             int content_len = 0;
             MemoryStream ms = new MemoryStream();
             if (this.httpHeaders.ContainsKey("Content-Length"))
@@ -150,18 +150,16 @@ namespace SHttp
                 content_len = Convert.ToInt32(this.httpHeaders["Content-Length"]);
                 if (content_len > MAX_POST_SIZE)
                 {
-                    throw new Exception(
-                        String.Format("POST Content-Length({0}) too big for this simple server",
-                          content_len));
+                    return;
                 }
                 byte[] buf = new byte[BUF_SIZE];
                 int to_read = content_len;
                 while (to_read > 0)
                 {
-                    Console.WriteLine("starting Read, to_read={0}", to_read);
+                    //Console.WriteLine("starting Read, to_read={0}", to_read);
 
                     int numread = this.inputStream.Read(buf, 0, Math.Min(BUF_SIZE, to_read));
-                    Console.WriteLine("read finished, numread={0}", numread);
+                    //Console.WriteLine("read finished, numread={0}", numread);
                     if (numread == 0)
                     {
                         if (to_read == 0)
@@ -178,7 +176,7 @@ namespace SHttp
                 }
                 ms.Seek(0, SeekOrigin.Begin);
             }
-            Console.WriteLine("get post data end");
+            //Console.WriteLine("get post data end");
             srv.handlePOSTRequest(this, new StreamReader(ms));
 
         }
